@@ -1,0 +1,40 @@
+{
+  "name": "marknext",
+  "version": "1.0.0",
+  "description": "The project tries to compile markdown script to nextjs script and deploy it on vercal",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "convert": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HongleiGu/marknext.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HongleiGu/marknext/issues"
+  },
+  "homepage": "https://github.com/HongleiGu/marknext#readme",
+  "dependencies": {
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "gray-matter": "^4.0.3",
+    "next": "^15.1.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-remark": "^2.1.0",
+    "remark": "^15.0.1",
+    "remark-react": "^9.0.1",
+    "typescript": "^5.7.3",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.6"
+  }
+}
