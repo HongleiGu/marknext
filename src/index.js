@@ -7,14 +7,47 @@ import remarkReact from 'remark-react';
 import matter from 'gray-matter';
 import React from 'react';
 
-// Custom function to handle button creation
-function createButtonComponent(options) {
-  const { action, changeTo, text } = options;
-  return `
-    <button onClick={() => handleAction('${action}', '${changeTo}')}>
-      ${text || 'Click Me'}
-    </button>
-  `;
+
+function createComponent(options) {
+  const { component } = options;
+  if (component === "button") {
+      return `
+          <${component} onClick={() => handleAction(${options.action}, '${options.changeto}')}>
+              ${options.text || 'Click Me'}
+          </${component}>
+      `;
+  }
+  return ''; // Return empty string if component is not recognized
+}
+
+// Use replace to extract the component name
+function parseComponent(content) {
+  // Regex to match the component name and a generic attribute structure
+  const componentRegex = /\[([a-zA-Z_]\w*)\s*(.*?)\]/g;
+
+  // Regex to match key-value pairs
+  const attrRegex = /(\w+)=({[^}]+}|[\w\s-]+)/g;
+
+  return content.replace(componentRegex, (match, component, attributesString) => {
+      const options = {};
+      options.component = component; // Set the component name
+
+      // Now use attrRegex to extract key-value pairs from the remaining string
+      let attributeMatch;
+      while ((attributeMatch = attrRegex.exec(attributesString)) !== null) {
+          const key = attributeMatch[1]; // The attribute key
+          let value = attributeMatch[2].trim(); // The attribute value
+
+          // Remove curly braces if present
+          if (value.startsWith('{') && value.endsWith('}')) {
+              value = value.slice(1, -1).trim();
+          }
+
+          options[key] = value; // Store in the options object
+      }
+
+      return createComponent(options); // Create the component
+  });
 }
 
 const WHITELIST = ['title']; // Variables to exclude from being treated as custom variables
@@ -28,18 +61,9 @@ async function convertMarkdownToReact(markdown) {
   // Replace custom variables in the content
   let processedContent = content;
 
-  // Regex to find custom button syntax with optional parameters
-  const buttonRegex = /\[button(?:\s+action=\{(.*?)\})?(?:\s+changeto=\{(.*?)\})?(?:\s+text=\{(.*?)\})?\]/g;
+  console.log(content)
   
-  // Replace button syntax with button component
-  processedContent = processedContent.replace(buttonRegex, (match, action, changeTo, buttonText) => {
-    const options = {
-      action: action || null,
-      changeTo: changeTo || null,
-      text: buttonText || 'Click Me', // Default button text if not provided
-    };
-    return createButtonComponent(options);
-  });
+  processedContent = parseComponent(processedContent)
 
   // Replace custom variables in the content
   customVariables.forEach(key => {
